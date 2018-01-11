@@ -1,0 +1,233 @@
+*{
+	margin:0px;
+	padding:0px;
+	
+}
+#header{
+	background:url(../images/header.png);
+	height:79px;
+}
+#header .LoginUser{
+		float:right;
+	margin-right:60px;
+	margin-top:40px;
+	color:#fff;
+	font-size:16px;
+}
+#header .LoginUser span{
+	margin-right:20px;
+}
+#header .LoginUser span img{
+	margin-right:10px;
+	vertical-align: -25%;
+}
+#header .LoginUser a{
+	color:#fff;
+	font-size:16px;
+}
+#left{
+	width:170px;
+	height:771px;
+	background:#808285;
+	float:left;
+	color:#fff;
+	font-weight:bold;
+	box-shadow:0px -5px 5px #2b4c60;
+}
+
+#left>ul>li{
+	height:50px;
+	line-height:50px;
+	width:170px;
+	border-bottom:1px solid #58595b;
+}
+#left ul li.nav:hover{
+	background:#369bd7;
+	cursor: pointer;
+}
+#left>ul>li>img.first-img{
+	vertical-align: -7%;
+	margin-left:20px;
+	}
+#left>ul>li>img.second-img{
+	vertical-align: 2%;
+	}
+#left>ul>li>span{
+	font-size : 17px;
+	margin-left:15px;
+	margin-right:20px;
+	}
+
+#shrink img:hover{
+	cursor: pointer;
+}
+#right{
+	height:764px;
+}
+#tt div{
+	/*
+	background:#f7f8fa;
+	border:1px solid #e6e6e6;*/
+	
+}
+
+
+
+#footer{
+clear: both;
+background:#369bd7;	
+height:37px;
+line-height:37px;
+color:#fff;
+text-align:center;
+font-size:14px;
+border-top:1px solid #88c4e8;
+}
+
+
+
+.tabs-header{
+	border: none;
+	background-color: #fff;
+}
+/*.tabs-scroller-left{
+	border-color: red;
+}
+.tabs-scroller-right{
+	border-color: red;
+}*/
+
+.tabs-title {
+font-size: 15px;
+}
+.tabs li{
+	margin:0px;
+}
+.tabs li a.tabs-inner {
+
+	color: #000;
+	background: -moz-linear-gradient(top,#fff,#a6c5ff 50%,#83aeff 100%);
+	background: -webkit-linear-gradient(top,#fff,#a6c5ff 50%,#83aeff 100%);
+background: -o-linear-gradient(top,#fff,#a6c5ff 50%,#83aeff 100%);
+/*background: linear-gradient(to bottom,#fff,#d5e6ff 60%,#83aeff 100%);*/
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#a6c5ff,endColorstr=#83aeff,GradientType=0);
+
+/*
+background:#43a0d7;
+border:1px solid red;*/
+}
+.tabs li.tabs-selected a.tabs-inner {
+font-weight: normal;
+outline: none;
+background-color: #ffffff;
+border-color:#e6e6e6;
+border-bottom-color:#fff;
+background: -moz-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
+background: -o-linear-gradient(top,#EFF5FF 0,#E0ECFF 100%);
+background: linear-gradient(to bottom,#d4d2d2 0,#fff 100%);
+background-repeat: repeat-x;
+filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#E0ECFF,GradientType=0);
+/*background:#43a0d7;*/
+}
+.tabs li a.tabs-inner:hover{
+}
+
+.tabs li.tabs-selected a.tabs-inner:hover {
+	background:#red;
+}
+.tabs{
+	background:#fff;
+	border-color:#e6e6e6;
+	padding-left: 0px;
+}
+
+.tabs li a.tabs-inner {
+-moz-border-radius: 0px 0px 0 0;
+-webkit-border-radius: 0px 0px 0 0;
+border-radius: 0px 0px 0 0;
+border-color:#72a0ff;
+
+}
+.tabs-panels{
+	border-color:#e6e6e6;
+	/*border-width:1px;*/
+}
+/*.tabs li a.tabs-inner, .tabs li.tabs-selected a.tabs-inner{
+	border-color:red
+}*/
+.tabs li a.tabs-close {
+background: url('../images/quit.png') no-repeat;
+}
+
+
+
+#tab-tools a.MyBtn{
+	display: inline-block;
+	width:57px;
+	height:30px;
+	line-height:30px;
+	background:#f9f9f9;
+	color:#000;
+	border:1px solid #dcdcdc;
+	border-radius:5px;
+	text-decoration:none;
+}
+#tab-tools a.MyBtn:hover{
+	background:#0067cc;
+	color:#fff;
+	text-decoration:none;
+}
+
+ul {
+	list-style: none;
+}
+
+.popover-content {
+background:#808285;
+color:#fff;
+}
+.popover-content ul{
+color:#fff;
+/*border:1px solid #000;*/
+border-radius:5px;
+}
+.popover-content ul li{
+	font-size:12px;
+	height:40px;
+	line-height:40px;
+	padding: 0px 20px;
+}
+.popover-content ul li:hover{
+	cursor:pointer;
+	background:#369bd7;
+}
+.popover-content ul li img{
+	margin-right:12px;
+	vertical-align: -13%;
+}
+
+
+/*esay ui img*/
+.tabs li a.tabs-close{
+	margin-top: -15px;
+}
+
+.top_arrow {
+border: 0 none;
+bottom: 40px;
+cursor: pointer;
+display: block;
+height: auto;
+margin: 0;
+opacity: 0.5;
+padding: 0;
+position: fixed;
+right: 40px;
+width: 35px;
+z-index: 99999;
+}
+#component-body-div{
+	padding-bottom: 0;
+}
+.help{ float: right; margin-right: 10px; background: none; border: none; margin-top:1px;}

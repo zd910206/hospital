@@ -1,0 +1,40 @@
+*{
+	margin:0px;
+	padding:0px;
+	
+}
+body{
+	background:url(../images/bg.png);
+	font-size:14px;
+}
+#container{
+	background:url(../images/login-bg.png);
+	width:695px;
+	height:357px;
+	margin:auto;
+	margin-top:160px;
+}
+.btn_group{
+	padding-top:255px;
+	padding-left:85px;
+}
+/* .btn_group .btn-text{
+	width:120px;
+	border-radius:5px;
+}
+.btn_group .btn-text:hover{
+border:2px solid #75b8ef;
+}
+.btn_group .btn-button{
+	width:62px;
+	height:24px;
+    color:#fff;
+	background:url(../images/button1.png);
+	font-size:14px;
+	font-weight:bold;
+	border-radius:5px;
+}
+.btn_group .btn-button:hover{
+	cursor: pointer;
+	background:url(../images/button2.png);
+} */

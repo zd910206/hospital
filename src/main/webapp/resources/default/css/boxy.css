@@ -1,0 +1,53 @@
+@charset "utf-8";
+/* CSS Document */
+.boxy-wrapper{position:absolute;}
+.boxy-wrapper.fixed{position:fixed; border: 2px solid #1078b4;background:#fff;/* background:#e1f4fd; */ border-radius: 5px;box-shadow: 1px 1px 10px #999;}
+/* Modal */ 
+.boxy-modal-blackout{position:absolute; background-color:black; left:0; top:0;} 
+/* Border */
+.boxy-wrapper{empty-cells:show;}
+
+
+/* Title bar */
+.boxy-wrapper .title-bar{height: 30px; line-height: 30px; background: #36a9e1;
+  border-radius:5px; -webkit-border-radius:5px; -moz-border-radius:5px;
+  color:#ffffff; font-size: 0.9em; font-weight: bold; border:1px solid #dddddd; position: relative; margin-bottom: 10px; margin:2px;}
+  
+ .dialog-title-icon{
+	display: block; float: left;
+	width: 30px; height: 100%; background: #1e8fc6 url(../images/t1.png) no-repeat center 9px; border-top-left-radius: 5px; border-bottom-left-radius: 5px; text-align: center; vertical-align: middle;
+}
+.boxy-wrapper .title-bar.dragging{cursor:move;}
+.boxy-wrapper .title-bar h2{float:left;display:inline-block;color:#fff;font-size:16px; line-height:32px; margin:0; padding:0 0 0 10px; font-weight:normal;}
+.boxy-wrapper .title-bar .close{color:white; position:absolute; top:1px; right:6px; font-size:12px; background:url("../images/dialog-close.png") no-repeat; width: 26px; height: 27px;}
+/* Content Region */
+.boxy-inner{background-color:white; padding:0}
+.boxy-content{padding:5px 15px 10px 15px}
+/* Question Boxes */
+.boxy-wrapper .question{width:350px; min-height:60px; _height:60px;}
+.boxy-wrapper .answers{text-align:right;}
+/*confirm btn by zhangxinxu http://www.zhangxinxu.com*/
+.boxy-btn1,.boxy-btn2,.boxy-btn3{padding:3px 12px 1.9px; border-width:1px; border-style:solid; letter-spacing:1px; line-height:15px; cursor:pointer; overflow:visible;}
+.boxy-btn1{background-color:#425f99; border-color:#5A7EC6 #2C3E5F #2C3E5F #5A7EC6; color:white;}
+.boxy-btn2{background-color:#ECE9D8; border-color:#eeeeee #bbbbbb #bbbbbb #eeeeee; color:#333333;}
+.boxy-btn3{background-color:#EAEAEA; border-color:#EAEAEA #aaaaaa #aaaaaa #EAEAEA; color:#333333; padding:3px 5px 1.9px;}
+.boxy-btn3:hover{background-color:#cad5eb; border-color:#CED8E3 #A2ADBC #A2ADBC #CED8E3;}
+
+
+.boxy-input{
+	height: 15px;
+	padding: 6px 12px;
+	font-size: 14px;
+	line-height: 30px;
+	color: #555;
+	vertical-align: middle;
+	background-color: #fff;
+	background-image: none;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+	box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+	-webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+	
+}

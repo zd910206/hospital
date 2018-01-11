@@ -1,0 +1,70 @@
+@CHARSET "UTF-8";
+body {
+font-family: "微软雅黑", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.panel-body {
+	font-size: 12px;
+}
+
+.panel-title {
+	font-size: 13px;
+}
+
+.tree-title {
+	font-size: 13px;
+}
+
+.datagrid-header .datagrid-cell span {
+	font-size: 13px;
+}
+
+.l-btn-text {
+	font-size: 13px;
+}
+
+.datagrid-cell,.datagrid-cell-group,.datagrid-header-rownumber,.datagrid-cell-rownumber
+	{
+	font-size: 13px;
+}
+
+.pagination-info {
+	font-size: 14px;
+}
+
+.pagination span {
+	font-size: 14px;
+}
+
+label {
+font-weight: normal;
+}
+
+.label{
+	line-height: 30px;
+}
+
+/* .tabs {
+border-width: 0 0 0 0;
+} */
+
+/* .panel-header {
+border-width: 0 1px 1px 1px;
+border-style: solid;
+} */
+
+.datagrid-row {
+height: 30px;
+}
+
+.datagrid-cell{
+	line-height: 30px;
+}
+
+.messager-body.panel-body.panel-body-noheader.panel-body-noborder.window-body.window-body-noheader{
+	width:auto;
+}
+
+.bootstrap-table{
+	font-size: 13px;
+}
