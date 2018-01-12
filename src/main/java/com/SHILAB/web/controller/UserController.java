@@ -30,7 +30,6 @@ import static com.SHILAB.web.web.util.Constants.RESULT;
 import static com.SHILAB.web.web.util.Constants.USER_KEY;
 
 /**
- * 用户管理控制器
  *
  * @author ZD
  */
@@ -89,8 +88,8 @@ public class UserController {
 
                 String str[] = originalFileName.split("\\.");
                 String path1 = path + "\\" + originalFileName;
-                String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages" + "\\" + str[0];
-                mfunc.DecompressNConvertToPath(0, path1, originalFileName, "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages", path2);
+                String path2 = "C:\\Users\\Jingxuan\\hosptial\\src\\main\\webapp\\resources\\newImages" + "\\" + str[0];
+                mfunc.DecompressNConvertToPath(0, path1, originalFileName, "C:\\Users\\Jingxuan\\hosptial\\src\\main\\webapp\\resources\\newImages", path2);
             }
 
         } catch (Exception e) {
