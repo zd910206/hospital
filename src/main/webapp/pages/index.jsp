@@ -154,6 +154,10 @@
                 },
                 success: function (res) {
                     if (res.result) {
+
+                        $('#bt').css("left",0);
+                        $('#bgcolor').css("width",0);
+
                         imageNum = res.num / 2;
                         fileNameFloder = fileName;
                         $("#images").show();
