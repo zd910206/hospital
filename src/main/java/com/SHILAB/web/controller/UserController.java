@@ -1,10 +1,10 @@
 package com.SHILAB.web.controller;
 
+import DecompressNConvertToPath.MatlabFunc;
 import com.SHILAB.web.base.util.CollectionUtils;
 import com.SHILAB.web.model.User;
 import com.SHILAB.web.service.*;
 import com.SHILAB.web.web.util.HttpSessionProvider;
-import matlabTest.matlabTest;
 import org.apache.commons.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +62,7 @@ public class UserController {
      */
     @RequestMapping(value = "/upload", method = RequestMethod.POST, consumes = "multipart/*")
     public String uploadFilesFromHtml(MultipartHttpServletRequest request) throws FileUploadException, IOException {
-        User user= (User) session.getAttribute(request, USER_KEY);
+        User user = (User) session.getAttribute(request, USER_KEY);
 
         MultiValueMap<String, MultipartFile> map = request.getMultiFileMap();// 为了获取文件，这个类是必须的
         List<MultipartFile> list = map.get("inputFile");// 获取到文件的列表
@@ -73,23 +73,31 @@ public class UserController {
         String path = "d:\\" + user.getUserName();
 
         List<String> filenameList = new ArrayList<String>();//
-        for (MultipartFile mFile : list) {
-            String originalFileName = mFile.getOriginalFilename();//获取文件名称
-//            if(originalFileName != null && originalFileName.length() > 0 ) {
-//
-//            } else {
-//
-//            }
 
-            filenameList.add(originalFileName);
-            byte[] bytes = mFile.getBytes();//获取字节数组
-            String filePath = path + File.separator + originalFileName;
-            FileOutputStream fos = new FileOutputStream(new File(filePath)); //写出到文件
-            fos.write(bytes);
-            fos.flush();
-            fos.close();
+        try {
+            for (MultipartFile mFile : list) {
+                String originalFileName = mFile.getOriginalFilename();//获取文件名称
+                filenameList.add(originalFileName);
+                byte[] bytes = mFile.getBytes();//获取字节数组
+                String filePath = path + File.separator + originalFileName;
+                FileOutputStream fos = new FileOutputStream(new File(filePath)); //写出到文件
+                fos.write(bytes);
+                fos.flush();
+                fos.close();
+
+                MatlabFunc mfunc = new MatlabFunc();
+
+                String str[] = originalFileName.split("\\.");
+                String path1 = path + "\\" + originalFileName;
+                String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages" + "\\" + str[0];
+                mfunc.DecompressNConvertToPath(0, path1, originalFileName, "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages", path2);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return "index";
+
     }
 
 
@@ -99,23 +107,26 @@ public class UserController {
      * @param request
      * @param response
      */
-    @RequestMapping("/matlabAdd")
+    @RequestMapping("/showDcm")
     @ResponseBody
-    public Map<String, Object> matlabAdd(HttpServletRequest request, HttpServletResponse response) {
+    public Map<String, Object> showImagesNum(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resultMap = CollectionUtils.newHashMap();
-        try {
-            matlabTest func = new matlabTest();
-            String sum = func.addTest(1)[0].toString();
-//            System.out.println(func.addTest(1)[0]);
+        ArrayList<String> list = new ArrayList<String>();
+        File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages");
+        File[] tempList = file.listFiles();
+        for(int i = 0; i < tempList.length; i++) {
+            if (tempList[i].isDirectory()) {
+                list.add(tempList[i].getName());
+            }
+        }
+        if(list.size() > 0) {
             resultMap.put(RESULT, true);
-            resultMap.put("sum", sum);
-        } catch (Exception e) {
-            e.printStackTrace();
+            resultMap.put("dcmList", list);
+        } else {
+            resultMap.put(RESULT, false);
         }
         return resultMap;
     }
-
-
 
 
     // 判断文件是否存在
@@ -148,6 +159,24 @@ public class UserController {
             System.out.println("dir not exists, create it ...");
             file.mkdir();
         }
+
+    }
+
+
+    @RequestMapping("/showImages")
+    @ResponseBody
+    public Map<String, Object> showImages(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> resultMap = CollectionUtils.newHashMap();
+        String fileName = request.getParameter("fileName");
+        File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages\\" + fileName);
+        String[] s = file.list();
+        if(s.length > 0) {
+            resultMap.put(RESULT, true);
+            resultMap.put("num", s.length);
+        } else {
+            resultMap.put(RESULT, false);
+        }
+        return resultMap;
 
     }
 

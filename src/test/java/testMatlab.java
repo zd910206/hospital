@@ -1,14 +1,16 @@
 //import matlabplot.*;
 
 
-import matlabTest.*;
+import DecompressNConvertToPath.MatlabFunc;
 
 public class testMatlab {
     public static void main(String[] str) {
-//        System.out.println("你好！");
+        System.out.println("Hello!");
         try{
-            matlabTest func = new matlabTest();
-            System.out.println(func.addTest(1)[0]);
+            MatlabFunc func = new MatlabFunc();
+
+           // 'E:\Heart.dcm','Heart.dcm','E:\','E:\ttttttt'
+            func.DecompressNConvertToPath(0,"E:\\Heart.dcm","Heart.dcm","E:\\","E:\\ttttttt");
         }catch (Exception e){
             e.printStackTrace();
         }

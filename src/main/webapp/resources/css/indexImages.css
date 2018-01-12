@@ -1,0 +1,7 @@
+#box{position: relative; width: 200px; height: 20px; margin:  10px 20px 0;}
+#bg{height: 10px; margin-top: 10px; border: 1px solid #ddd; border-radius: 5px; overflow: hidden;}
+#bgcolor{background: #5889B2; width: 0; height: 10px; border-radius: 5px;}
+#bt{width: 15px; height: 15px; background: url(./img/button.png) no-repeat center center; border-radius: 17px; overflow: hidden; position: absolute; left: 0px; margin-left: -10px; top: -2px; cursor: pointer;}
+#text{width: 200px;height:200px; margin: 0 20px; font-size: 16px; line-height: 2em; }
+#ProgressInf{margin: 0px 20px;}
+.bg{background:#ff99cc !important;}
