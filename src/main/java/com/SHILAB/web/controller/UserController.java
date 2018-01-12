@@ -129,7 +129,7 @@ public class UserController {
     }
 
 
-    // 判断文件是否存在
+
     public static void judeFileExists(File file) {
 
         if (file.exists()) {
@@ -146,7 +146,7 @@ public class UserController {
 
     }
 
-    // 判断文件夹是否存在
+
     public static void judeDirExists(File file) {
 
         if (file.exists()) {
