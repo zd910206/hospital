@@ -60,8 +60,8 @@
                     if(left < 0){
                         left = 0;
                     }
-                    if(left > 200){
-                        left = 200;
+                    if(left > 800){
+                        left = 800;
                     }
                     $btn.css('left',left);
                     $bgcolor.width(left);
@@ -76,11 +76,11 @@
                     if(left < 0){
                         left = 0;
                     }
-                    if(left > 200){
-                        left = 200;
+                    if(left > 800){
+                        left = 800;
                     }
                     $btn.css('left',left);
-                    $bgcolor.stop().animate({width:left},200);
+                    $bgcolor.stop().animate({width:left},800);
                     viewImage(left/2);
                 }
             });
@@ -160,7 +160,7 @@
                         $("#ProgressInf").text("page 1 of" + imageNum);
 
                         // $("#text").attr("style","background:url('D:\\\\" +floder + "\\" + fileName + "\\" + fileName + "_1.jpg') no-repeat;");
-                        $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+selectedDiv+"/"+selectedDiv+"_1.jpg') no-repeat;");
+                        $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+selectedDiv+"/"+selectedDiv+"_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;  ");
 
                     } else {
                         alert("No image in this folder!");
@@ -178,14 +178,14 @@
         }
 
         function viewImage(num) {
-            var perNum = 100 / imageNum;
+            var perNum = 400 / imageNum;
             var temp = Math.ceil(num / perNum);
             if( temp == 0) {
-                $("#text").attr("style","background:url('') no-repeat;");
-                $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+fileNameFloder+"/"+fileNameFloder+"_1.jpg') no-repeat;");
+                $("#text").attr("style","background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
+                $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+fileNameFloder+"/"+fileNameFloder+"_1.jpg') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
             } else {
-                $("#text").attr("style","background:url('') no-repeat;");
-                $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+fileNameFloder+"/"+fileNameFloder+"_"+temp+".jpg') no-repeat;");
+                $("#text").attr("style","background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
+                $("#text").attr("style","background:url('<%= CONTEXT_PATH%>resources/newImages/"+fileNameFloder+"/"+fileNameFloder+"_"+temp+".jpg') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
             }
             $("#ProgressInf").text("");
             $("#ProgressInf").text("page " +temp + " of" + imageNum);
