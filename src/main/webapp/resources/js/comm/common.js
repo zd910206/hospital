@@ -472,16 +472,14 @@ function showMask(msg){
 
 var myApp;
 myApp = myApp || (function () {
-    var pleaseWaitDiv = $('<div class="modal fade" style="z-index: 99999999;"> ' + 
-    		  '<div class="modal-dialog modal-sm">' + 
-    		    '<div class="modal-content" style="margin-top: 250px;">' + 
-    		      '<div class="progress">' + 
-    		      '<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 100%">' + 
-    		        '<span style="font-size: 14px;line-height: 35px;">操作正在进行，请稍侯。。。</span>' + 
-    		      '</div>' + 
-    		      '</div>' + 
-    		    '</div>' + 
-    		  '</div>' + 
+    var pleaseWaitDiv = $('<div class="modal fade" style="z-index: 99999999;"> ' +
+    		  '<div class="modal-dialog modal-sm">' +
+    		    '<div class="modal-content" style="margin-top: 250px;">' +
+    		      '<div class="progress-bar progress-bar-info progress-bar-striped active" role="progressbar" aria-valuemin="0" aria-valuemax="100" style="width: 100%;height: 100%">' +
+    		        '<span style="font-size: 16px;line-height: 35px;">Operation in progress, please wait...</span>' +
+    		      '</div>' +
+    		    '</div>' +
+    		  '</div>' +
     		'</div>');
     return {
         showPleaseWait: function() {
@@ -501,12 +499,6 @@ function hideBtMask(){
 	parent.myApp.hidePleaseWait();
 }
 
-function hideMask(){
-//	var d = GLOB.dlg.mask;
-//	d.hide();
-	if(parent)
-		parent.$.messager.progress('close');
-};
 
 function boxyAlert(msg){
 	Boxy.alert(msg, null, {title: "提示", modal : true,draggable : false,closeable : true,cache:true,unloadOnHide : true}); 
@@ -1015,14 +1007,12 @@ $.ajaxSetup({
 //		MessageAlert("服务器拒绝连接！"); 
 //		return;
 //		MessageAlert(textStatus);
-		hideMask();
 		if(textStatus == 'timeout'){
 			MessageAlert("ajax请求超时，请检查网络是否正常！"); 
 			return;
 		}
 	},
 	complete: function(xhr,status) {//函数写在complete中，因为无论success还是error，complete函数都会执行。
-//		hideMask();
 		var sessionStatus = xhr.getResponseHeader('sessionstatus');
 		if(sessionStatus == 'timeout') {
 			var top = getTopWinow();
@@ -1232,7 +1222,7 @@ $.fn.exportExcel = function(url, params){
 
 //打开进度条
 function startProcess(){
-	$.messager.progress({text:"操作进行中，请稍候……", interval:100});
+	$.messager.progress({text:"Operation in progress, please wait...", interval:100});
 }
 
 //关闭进度条

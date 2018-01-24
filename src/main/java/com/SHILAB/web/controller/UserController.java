@@ -1,10 +1,11 @@
 package com.SHILAB.web.controller;
 
-import DecompressNConvertToPath.MatlabFunc;
 import com.SHILAB.web.base.util.CollectionUtils;
 import com.SHILAB.web.model.User;
 import com.SHILAB.web.service.*;
 import com.SHILAB.web.web.util.HttpSessionProvider;
+import com.mathworks.toolbox.javabuilder.MWNumericArray;
+import matlabFunctions.MatlabFunction;
 import org.apache.commons.fileupload.FileUploadException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,11 +65,11 @@ public class UserController {
     public String uploadFilesFromHtml(MultipartHttpServletRequest request) throws FileUploadException, IOException {
         User user = (User) session.getAttribute(request, USER_KEY);
 
-        MultiValueMap<String, MultipartFile> map = request.getMultiFileMap();// 为了获取文件，这个类是必须的
-        List<MultipartFile> list = map.get("inputFile");// 获取到文件的列表
+        MultiValueMap<String, MultipartFile> map = request.getMultiFileMap();
+        List<MultipartFile> list = map.get("inputFile");
 
 
-        File dir = new File("d:\\" + user.getUserName());  // 创建用户文件夹
+        File dir = new File("d:\\" + user.getUserName());
         judeDirExists(dir);
         String path = "d:\\" + user.getUserName();
 
@@ -76,21 +77,21 @@ public class UserController {
 
         try {
             for (MultipartFile mFile : list) {
-                String originalFileName = mFile.getOriginalFilename();//获取文件名称
+                String originalFileName = mFile.getOriginalFilename();
                 filenameList.add(originalFileName);
-                byte[] bytes = mFile.getBytes();//获取字节数组
+                byte[] bytes = mFile.getBytes();
                 String filePath = path + File.separator + originalFileName;
-                FileOutputStream fos = new FileOutputStream(new File(filePath)); //写出到文件
+                FileOutputStream fos = new FileOutputStream(new File(filePath));
                 fos.write(bytes);
                 fos.flush();
                 fos.close();
 
-                MatlabFunc mfunc = new MatlabFunc();
+                MatlabFunction mfunc = new MatlabFunction();
 
                 String str[] = originalFileName.split("\\.");
                 String path1 = path + "\\" + originalFileName;
-                String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages" + "\\" + str[0];
-                mfunc.DecompressNConvertToPath(0, path1, originalFileName, "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages", path2);
+                String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages";
+                mfunc.DecompressNConvertToPath(0, path1, originalFileName, path2, path2 + "\\" + str[0]);
             }
 
         } catch (Exception e) {
@@ -114,12 +115,12 @@ public class UserController {
         ArrayList<String> list = new ArrayList<String>();
         File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages");
         File[] tempList = file.listFiles();
-        for(int i = 0; i < tempList.length; i++) {
+        for (int i = 0; i < tempList.length; i++) {
             if (tempList[i].isDirectory()) {
                 list.add(tempList[i].getName());
             }
         }
-        if(list.size() > 0) {
+        if (list.size() > 0) {
             resultMap.put(RESULT, true);
             resultMap.put("dcmList", list);
         } else {
@@ -127,7 +128,6 @@ public class UserController {
         }
         return resultMap;
     }
-
 
 
     public static void judeFileExists(File file) {
@@ -170,7 +170,7 @@ public class UserController {
         String fileName = request.getParameter("fileName");
         File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages\\" + fileName);
         String[] s = file.list();
-        if(s.length > 0) {
+        if (s.length > 0) {
             resultMap.put(RESULT, true);
             resultMap.put("num", s.length);
         } else {
@@ -178,6 +178,87 @@ public class UserController {
         }
         return resultMap;
 
+    }
+
+    @RequestMapping("/verticalFlip")
+    @ResponseBody
+    public Map<String, Object> verticalFlip(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> resultMap = CollectionUtils.newHashMap();
+        String selectedDiv = request.getParameter("selectedDiv");
+        User user = (User) session.getAttribute(request, USER_KEY);
+        String path = "d:\\" + user.getUserName();
+        try {
+            MatlabFunction mfunc = new MatlabFunction();
+            String path1 = path + "\\" + selectedDiv + ".dcm";
+            String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages";
+
+            mfunc.vFlipDecompressNConvertToPath(0, path1, selectedDiv + ".dcm", path2, path2 + "\\" + selectedDiv);
+            resultMap.put(RESULT, true);
+
+        } catch (Exception e) {
+            resultMap.put(RESULT, false);
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+    @RequestMapping("/viewPulsatility")
+    @ResponseBody
+    public Map<String, Object> viewPulsatility(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> resultMap = CollectionUtils.newHashMap();
+        String selectedDiv = request.getParameter("selectedDiv");
+        Double firstPoint_x = Double.valueOf(request.getParameter("firstPoint_x"));
+        Double firstPoint_y = Double.valueOf(request.getParameter("firstPoint_y"));
+        Double secondPoint_x = Double.valueOf(request.getParameter("secondPoint_x"));
+        Double secondPoint_y = Double.valueOf(request.getParameter("secondPoint_y"));
+        String fRate = request.getParameter("fRate");
+        String calibration = request.getParameter("calibration");
+
+        Double newfRate;
+        Double newcalibration;
+
+        List<Double> xList = new ArrayList<Double>();
+        List<Double> yList = new ArrayList<Double>();
+
+
+        String path = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages\\" + selectedDiv + "\\" + selectedDiv + "_1.dcm";
+
+        try {
+            MatlabFunction mfunc = new MatlabFunction();
+
+            if (fRate == null || fRate.equals("")) {
+                newfRate = Double.parseDouble(mfunc.detectFrameRate(1, path)[0].toString());
+            } else {
+                newfRate = Double.valueOf(fRate);
+            }
+            if (calibration == null || calibration.equals("")) {
+                newcalibration = Double.parseDouble(mfunc.detectCalibration(1, path)[0].toString());
+            } else {
+                newcalibration = Double.parseDouble(mfunc.manualPixelCalibration(1, firstPoint_x, firstPoint_y, secondPoint_x, secondPoint_y, Double.valueOf(calibration))[0].toString());
+            }
+
+            Object[] resultArr = mfunc.distBtw2Points(3, "D:\\admin\\" + selectedDiv + ".dcm", firstPoint_x, 600.0 - firstPoint_y, secondPoint_x, 600.0 - secondPoint_y, newcalibration, newfRate);
+            if (resultArr[2].toString().equals("1")) {
+                resultMap.put(RESULT, false);
+            } else {
+//                int len = ((Double[][])((MWNumericArray) resultArr[0]).toDoubleArray())[0].length;
+                for (int i = 1; i <= 251; i++) {
+                    xList.add(((MWNumericArray) resultArr[0]).getDouble(i));
+                }
+                for (int i = 1; i <= 251; i++) {
+                    yList.add(((MWNumericArray) resultArr[1]).getDouble(i));
+                }
+
+                resultMap.put(RESULT, true);
+                resultMap.put("xList", xList);
+                resultMap.put("yList", yList);
+            }
+
+        } catch (Exception e) {
+            resultMap.put(RESULT, false);
+            e.printStackTrace();
+        }
+        return resultMap;
     }
 
 
