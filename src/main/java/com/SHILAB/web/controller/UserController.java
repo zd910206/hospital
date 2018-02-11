@@ -31,7 +31,7 @@ import static com.SHILAB.web.web.util.Constants.RESULT;
 import static com.SHILAB.web.web.util.Constants.USER_KEY;
 
 /**
- * 用户管理控制器
+ *
  *
  * @author ZD
  */
@@ -191,8 +191,10 @@ public class UserController {
             MatlabFunction mfunc = new MatlabFunction();
             String path1 = path + "\\" + selectedDiv + ".dcm";
             String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages";
-
+            String path3 = "E:\\workspace\\hosptial\\target\\hospital\\resources\\newImages";
             mfunc.vFlipDecompressNConvertToPath(0, path1, selectedDiv + ".dcm", path2, path2 + "\\" + selectedDiv);
+
+            mfunc.vFlipDecompressNConvertToPath(0, path1, selectedDiv + ".dcm", path2, path3 + "\\" + selectedDiv);
             resultMap.put(RESULT, true);
 
         } catch (Exception e) {

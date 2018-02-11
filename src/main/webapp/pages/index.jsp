@@ -39,16 +39,12 @@
         var imageNum;
         var fileNameFloder;
 
-        var getFirstPoint = 0;
-        var getSecondPoint = 0;
-        var firstPoint_x;
-        var firstPoint_y;
-        var secondPoint_x;
-        var secondPoint_y;
+        var playSpeed = 0;
 
         var start = false;
 
-        $(function () {
+        $(function (e) {
+
             var $box = $('#box');
             var $bg = $('#bg');
             var $bgcolor = $('#bgcolor');
@@ -103,38 +99,106 @@
             //     alert(x+'_'+y);
             // });
 
-            $("#text").click(function () {
-                start = true;
-                if (start) {
-                    var x = event.offsetX;
-                    var y = event.offsetY;
-                    if (getFirstPoint == 1) {
-                        // $("div").remove("#text .pixel");
-                        $("div").remove(".pixel");
+            //select a box
 
-                        firstPoint_x = x;
-                        firstPoint_y = y;
-                        $("#first_x").val(x);
-                        $("#first_y").val(y);
-                        var content = $("<div class='pixel'/></div>").css({"top": y + "px", "left": x + "px"});
-                        $("#text").append(content[0]);
+
+        });
+
+        window.onload = function(e) {
+            e = e || window.event;
+            // diffX, diffY the Y-axis difference between first point and $text
+            var startX, startY, diffX, diffY;
+            // is drag or not,initial is false
+            var dragging = false;
+
+            var $text = document.getElementById("text");
+
+            // mouse down
+            $('#text').mousedown(function(e) {
+                startX = e.pageX;
+                startY = e.pageY;
+
+                // if mouse down on class of selectedBox
+                if(e.target.className.match('selectedBox')) {
+                    // allow to drag
+                    dragging = true;
+
+                    // set current div name as "moving_box"
+                    if(document.getElementById("moving_box") !== null) {
+                        document.getElementById("moving_box").removeAttribute("id");
                     }
-                    if (getSecondPoint == 1) {
-                        // $("div").remove("#text .pixe2");
-                        $("div").remove(".pixe2");
+                    e.target.id = "moving_box";
 
-                        secondPoint_x = x;
-                        secondPoint_y = y;
-                        $("#second_x").val(x);
-                        $("#second_y").val(y);
-                        var content = $("<div class='pixe2'/></div>").css({"top": y + "px", "left": x + "px"});
-                        $("#text").append(content[0]);
+                    // calculate the coordinate difference
+                    diffX = startX - e.target.offsetLeft;
+                    diffY = startY - e.target.offsetTop;
+                }
+                else {
+                    //delete old selectedBox
+                    $("div").remove(".selectedBox");
+
+                    // create selectedBox in text
+                    var active_box = document.createElement("div");
+                    active_box.id = "active_box";
+                    active_box.className = "selectedBox";
+                    active_box.style.top = startY + 'px';
+                    active_box.style.left = startX + 'px';
+                    $text.appendChild(active_box);
+                    active_box = null;
+                }
+            });
+
+            // mouse move
+            $('#text').mousemove(function(e) {
+                // update the size of selectedBox
+                if(document.getElementById("active_box") !== null) {
+                    var ab = document.getElementById("active_box");
+                    ab.style.width = e.pageX - startX + 'px';
+                    ab.style.height = e.pageY - startY + 'px';
+                }
+
+                // move,update coordinate of selectedBox
+                if(document.getElementById("moving_box") !== null && dragging) {
+                    var mb = document.getElementById("moving_box");
+                    var text = document.getElementById("text");
+                    mb.style.top = e.pageY - diffY + 'px';
+                    mb.style.left = e.pageX - diffX + 'px';
+
+                    if(mb.offsetTop < text.offsetTop) {
+                        mb.style.top = text.style.top;
+                    }
+                    if(mb.offsetTop + mb.offsetHeight > text.offsetTop + text.offsetHeight) {
+                        mb.style.top = text.offsetTop + text.offsetHeight - mb.offsetHeight + 'px';
+                    }
+                    if(mb.offsetLeft < text.offsetLeft) {
+                        mb.style.left = text.style.left;
+                    }
+                    if(mb.offsetLeft + mb.offsetWidth > text.offsetLeft + text.offsetWidth) {
+                        mb.style.left = text.offsetLeft + text.offsetWidth - mb.offsetWidth + 'px';
+                    }
+
+                }
+            });
+
+            // mouse up
+            $('#text').mouseup(function(e) {
+                // forbid to drag
+                dragging = false;
+                if(document.getElementById("active_box") !== null) {
+                    var text = document.getElementById("text");
+                    var ab = document.getElementById("active_box");
+                    ab.removeAttribute("id");
+                    // if length and width shorter than 3px，remove selectedBox
+                    if(ab.offsetWidth < 3 || ab.offsetHeight < 3) {
+                        $("div").remove("#active_box");
+                    }
+
+                    if(ab.offsetWidth + ab.offsetLeft > text.offsetWidth || ab.offsetHeight + ab.offsetLeft > text.offsetHeight) {
+                        $("div").remove("#active_box");
                     }
                 }
-                start = false;
-
-            })
-        });
+            });
+        }
 
         function checkUploadFile() {
             var fileName = document.getElementById("inputFileAgent").value;
@@ -200,17 +264,21 @@
                 },
                 success: function (res) {
                     if (res.result) {
-
-                        // init
                         init();
-
                         imageNum = res.num / 2;
                         fileNameFloder = fileName;
                         $("#images").show();
                         $("#ProgressInf").text("page 1 of " + imageNum);
 
-                        // $("#text").attr("style","background:url('D:\\\\" +floder + "\\" + fileName + "\\" + fileName + "_1.jpg') no-repeat;");
-                        $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;  ");
+                        var firstPicture = "<span> <img src='<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg' /> </span>";
+                        $("#text").append(firstPicture);
+                        //add picture
+                        for(var i = 1;i < imageNum; i ++) {
+                            var addPicture = "<span class='spanhide'> <img src='<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_" + (i+1) + ".jpg' /> </span>";
+                            $("#text").append(addPicture);
+                        }
+
+                       // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
 
                     } else {
                         alert("No image in this folder!");
@@ -221,52 +289,26 @@
 
         }
 
-        function init() {
-            getFirstPoint = 0;
-            getSecondPoint = 0;
-            firstPoint_x = null;
-            firstPoint_y = null;
-            secondPoint_x = null;
-            secondPoint_y = null;
-            $("#first_x").val("");
-            $("#first_y").val("");
-            $("#second_x").val("");
-            $("#second_y").val("");
-            $("div").remove("#text .pixel");
-            $("div").remove("#text .pixe2");
-
-
-            $('#bt').css("left", 0);
-            $('#bgcolor').css("width", 0);
-        }
-
         function changeAgentContent() {
             document.getElementById("inputFileAgent").value = document.getElementById("inputFile").value;
         }
 
         function viewImage(num) {
             var perNum = 400 / imageNum;
-            var temp = Math.ceil(num / perNum);
-            if (temp == 0) {
-                $("#text").attr("style", "background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
-                $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_1.jpg') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
+            var temp = Math.floor(num / perNum);
+            if (temp < 2) {
+                // $("#text").attr("style", "background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
+                // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_1.jpg') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
+
+                $("#text span").hide().eq(0).show();
+                $("#ProgressInf").text("page " + 1 + " of " + imageNum);
             } else {
-                $("#text").attr("style", "background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
-                $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_" + temp + ".jpg') no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;");
+                // $("#text").attr("style", "background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
+               // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_" + ( temp + 1 ) + ".jpg') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
+                $("#text span").hide().eq(temp - 1).show();
+                $("#ProgressInf").text("page " + temp + " of " + imageNum);
+
             }
-            $("#ProgressInf").text("");
-            $("#ProgressInf").text("page " + temp + " of " + imageNum);
-
-        }
-
-        function firstPoint() {
-            getSecondPoint = 0;
-            getFirstPoint = 1;
-        }
-
-        function secondPoint() {
-            getFirstPoint = 0;
-            getSecondPoint = 1;
         }
 
         function verticalFlip() {
@@ -280,10 +322,10 @@
                 success: function (res) {
                     if (res.result) {
                         init();
-                        $("#text").attr("style","background:url(''); no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;  ");
+                        $("#text").attr("style","background:url(''); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
 
                         $("#ProgressInf").text("page 1 of " + imageNum);
-                        $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:800px 600px;  ");
+                        $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
                         hideBtMask();
                     } else {
                         alert("error!");
@@ -402,6 +444,51 @@
             lineChart.setOption(option);
         }
 
+        function init() {
+
+            $('#bt').css("left", 0);
+            $('#bgcolor').css("width", 0);
+        }
+
+        var timer='';  // timer
+
+        function startPlay() {
+            // var tempTime = null;
+            var speed = $("#playSpeed").val();
+            playSpeed = parseInt(speed.replace(/\b(0+)/gi,""));
+            if(speed == null || speed == "") {
+                alert("please input play speed");
+            } else if(playSpeed != NaN){
+
+                $("#startPlay").hide();
+                $("#stopPlay").show();
+                $("#playSpeed").attr('readonly', true);
+
+                viewImage(0);
+
+                var num=0;
+                timer = setInterval(function(){ // open the Timer
+                    num++;
+                    if(num <= imageNum ){
+                        var left = 800 / imageNum * num
+                        $('#bt').css('left', left);
+                        $('#bgcolor').width(left);
+                        viewImage(left / 2)
+                    }else{
+                        stopPlay();
+                    }
+                },1000/playSpeed);
+            }
+        }
+        function stopPlay() {
+            clearInterval(timer); // delete timer
+            $("#playSpeed").removeAttr('readonly');
+            $("#playSpeed").val("");
+            $("#startPlay").show();
+            $("#stopPlay").hide();
+
+            init();
+        }
 
     </script>
 </head>
@@ -439,27 +526,12 @@
         <div id="text"></div>
 
         <div id="pointPosition">
+
             <div class="form-inline" role="form" style="margin: 10px;">
-                <button class="btn btn-default" onclick="firstPoint()" style="width: 110px">FirstPoint</button>
-                <div class="form-group">
-                    <label class="control-label" for="first_x" style="margin: 0px 5px">X:</label>
-                    <input class="form-control" id="first_x" name="first_x" style="width: 100px" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="first_y" style="margin: 0px 5px">Y:</label>
-                    <input class="form-control" id="first_y" name="first_y" style="width: 100px" readonly>
-                </div>
-            </div>
-            <div class="form-inline" role="form" style="margin: 10px;">
-                <button class="btn btn-default" onclick="secondPoint()" style="width: 110px">SecondPoint</button>
-                <div class="form-group">
-                    <label class="control-label" for="second_x" style="margin: 0px 5px">X:</label>
-                    <input class="form-control" id="second_x" name="second_x" style="width: 100px" readonly>
-                </div>
-                <div class="form-group">
-                    <label class="control-label" for="second_y" style="margin: 0px 5px">Y:</label>
-                    <input class="form-control" id="second_y" name="second_y" style="width: 100px" readonly>
-                </div>
+                <label class="control-label" for="fRate" style="margin: 0px 5px">set speed:</label>
+                <input class="form-control" id="playSpeed" name="playSpeed" style="width: 52%" onKeyUp="value=value.replace(/\D/g,'')" onchange="value=value.replace(/\D/g,'')" placeholder="pictures number per second">
+                <button class="btn btn-success" id="startPlay" onclick="startPlay()" style="width: 80px">start</button>
+                <button class="btn btn-danger" id="stopPlay" onclick="stopPlay()" style="width: 80px;display: none">stop</button>
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
