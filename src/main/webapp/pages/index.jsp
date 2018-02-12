@@ -450,44 +450,81 @@
             $('#bgcolor').css("width", 0);
         }
 
-        var timer='';  // timer
+        var timer = '';  // timer
+        var currentPicture = 0;
+        var playSpeed = 0;
 
         function startPlay() {
             // var tempTime = null;
             var speed = $("#playSpeed").val();
+            playSpeed = parseInt(speed.replace(/\b(0+)/gi, ""));
+            if (speed == null || speed == "") {
+                alert("please input play speed");
+            } else {
+                if (isNaN(playSpeed)) {
+                    alert("please input a correct number");
+                } else {
+                    $("#startPlay").hide();
+                    $("#continuePlay").hide();
+                    $("#stopPlay").show();
+                    $("#playSpeed").attr('readonly', true);
+
+                    viewImage(0);
+
+                    autoPlay(0, playSpeed);
+                }
+
+            }
+        }
+
+        function continuePlay() {
+
+            var speed = $("#playSpeed").val();
             playSpeed = parseInt(speed.replace(/\b(0+)/gi,""));
             if(speed == null || speed == "") {
                 alert("please input play speed");
-            } else if(playSpeed != NaN){
+            } else {
+                if(isNaN(playSpeed))  {
+                    alert("please input a correct number");
+                } else{
 
-                $("#startPlay").hide();
-                $("#stopPlay").show();
-                $("#playSpeed").attr('readonly', true);
+                    $("#startPlay").hide();
+                    $("#continuePlay").hide();
+                    $("#stopPlay").show();
+                    $("#playSpeed").attr('readonly', true);
 
-                viewImage(0);
-
-                var num=0;
-                timer = setInterval(function(){ // open the Timer
-                    num++;
-                    if(num <= imageNum ){
-                        var left = 800 / imageNum * num
-                        $('#bt').css('left', left);
-                        $('#bgcolor').width(left);
-                        viewImage(left / 2)
-                    }else{
-                        stopPlay();
-                    }
-                },1000/playSpeed);
+                    autoPlay(currentPicture, playSpeed);
+                }
             }
         }
+
         function stopPlay() {
+
             clearInterval(timer); // delete timer
             $("#playSpeed").removeAttr('readonly');
-            $("#playSpeed").val("");
+            $("#playSpeed").val(playSpeed);
             $("#startPlay").show();
+            $("#continuePlay").show();
             $("#stopPlay").hide();
 
-            init();
+            // init();
+        }
+
+        // play auto
+        function autoPlay(num , playSpeed) {
+            timer = setInterval(function(){ // open the Timer
+                num++;
+                currentPicture = num;
+                if(num <= imageNum ){
+                    var left = 800 / imageNum * num;
+                    $('#bt').css('left', left);
+                    $('#bgcolor').width(left);
+                    viewImage(left / 2)
+                }else{
+                    stopPlay();
+                    init();
+                }
+            },1000/playSpeed);
         }
 
     </script>
@@ -529,9 +566,10 @@
 
             <div class="form-inline" role="form" style="margin: 10px;">
                 <label class="control-label" for="fRate" style="margin: 0px 5px">set speed:</label>
-                <input class="form-control" id="playSpeed" name="playSpeed" style="width: 52%" onKeyUp="value=value.replace(/\D/g,'')" onchange="value=value.replace(/\D/g,'')" placeholder="pictures number per second">
-                <button class="btn btn-success" id="startPlay" onclick="startPlay()" style="width: 80px">start</button>
-                <button class="btn btn-danger" id="stopPlay" onclick="stopPlay()" style="width: 80px;display: none">stop</button>
+                <input class="form-control" id="playSpeed" name="playSpeed" style="width: 40%" onKeyUp="value=value.replace(/\D/g,'')" onchange="value=value.replace(/\D/g,'')" placeholder="pictures number per second">
+                <button class="btn btn-success" id="startPlay" onclick="startPlay()" style="width: 60px">start</button>
+                <button class="btn btn-default" id="continuePlay" onclick="continuePlay()" style="width: 70px;display: none">continue</button>
+                <button class="btn btn-danger" id="stopPlay" onclick="stopPlay()" style="width: 60px;display: none">stop</button>
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
