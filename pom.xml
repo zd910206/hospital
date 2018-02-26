@@ -24,7 +24,7 @@
     </dependency>
 
 
-    <!-- spring核心包 -->
+    <!-- spring -->
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-orm</artifactId>

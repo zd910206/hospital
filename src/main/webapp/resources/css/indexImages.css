@@ -13,7 +13,10 @@
     height: 0px;
     position: absolute;
     opacity: 0.5;
-    cursor: move;
 }
 
 .spanhide{display: none;}
+
+
+.pixel{position: relative;width:4px;height:4px;background: red;z-index: 100}
+.pixe2{position:relative;width:4px;height:4px;background: yellow;z-index: 101}

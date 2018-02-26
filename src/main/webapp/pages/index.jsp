@@ -43,6 +43,22 @@
 
         var start = false;
 
+        var drawROI = false;
+        //ROI
+        var offsetX;
+        var offsetY;
+        var pixelsX;
+        var pixelsY;
+
+        // TWO POINTS
+        var getFirstPoint = false;
+        var getSecondPoint = false;
+        var firstPoint_x;
+        var firstPoint_y;
+        var secondPoint_x;
+        var secondPoint_y;
+
+
         $(function (e) {
 
             var $box = $('#box');
@@ -99,12 +115,44 @@
             //     alert(x+'_'+y);
             // });
 
-            //select a box
+            $("#text").click(function () {
+                if (drawROI == false) {
+                    start = true;
+                    if (start) {
+                        var x = event.offsetX;
+                        var y = event.offsetY;
+                        if (getFirstPoint) {
+                            // $("div").remove("#text .pixel");
+                            $("div").remove(".pixel");
 
+                            firstPoint_x = x + offsetX;
+                            firstPoint_y = y + offsetY;
+                            $("#first_x").val(firstPoint_x);
+                            $("#first_y").val(firstPoint_y);
+                            var content = $("<div class='pixel'/></div>").css({"top": y + "px", "left": x + "px"});
+                            $(".selectedBox").append(content[0]);
+                            getFirstPoint = false;
+                        }
+                        if (getSecondPoint) {
+                            // $("div").remove("#text .pixe2");
+                            $("div").remove(".pixe2");
 
+                            secondPoint_x = x + offsetX;
+                            secondPoint_y = y + offsetY;
+                            $("#second_x").val(secondPoint_x);
+                            $("#second_y").val(secondPoint_y);
+                            var content = $("<div class='pixe2'/></div>").css({"top": y + "px", "left": x + "px"});
+                            $(".selectedBox").append(content[0]);
+                            getSecondPoint = false;
+                        }
+                    }
+                    start = false;
+                }
+
+            })
         });
 
-        window.onload = function(e) {
+        window.onload = function (e) {
             e = e || window.event;
             // diffX, diffY the Y-axis difference between first point and $text
             var startX, startY, diffX, diffY;
@@ -114,89 +162,110 @@
             var $text = document.getElementById("text");
 
             // mouse down
-            $('#text').mousedown(function(e) {
-                startX = e.pageX;
-                startY = e.pageY;
+            $('#text').mousedown(function (e) {
+                if (drawROI) {
+                    startX = e.pageX;
+                    startY = e.pageY;
 
-                // if mouse down on class of selectedBox
-                if(e.target.className.match('selectedBox')) {
-                    // allow to drag
-                    dragging = true;
+                    // if mouse down on class of selectedBox
+                    if (e.target.className.match('selectedBox')) {
+                        // $(".selectedBox").css("cursor", "move");
 
-                    // set current div name as "moving_box"
-                    if(document.getElementById("moving_box") !== null) {
-                        document.getElementById("moving_box").removeAttribute("id");
+                        // allow to drag
+                        dragging = true;
+
+                        // set current div name as "moving_box"
+                        if (document.getElementById("moving_box") !== null) {
+                            document.getElementById("moving_box").removeAttribute("id");
+                        }
+                        e.target.id = "moving_box";
+
+                        // calculate the coordinate difference
+                        diffX = startX - e.target.offsetLeft;
+                        diffY = startY - e.target.offsetTop;
                     }
-                    e.target.id = "moving_box";
+                    else {
+                        //delete old selectedBox
+                        $("div").remove(".selectedBox");
 
-                    // calculate the coordinate difference
-                    diffX = startX - e.target.offsetLeft;
-                    diffY = startY - e.target.offsetTop;
-                }
-                else {
-                    //delete old selectedBox
-                    $("div").remove(".selectedBox");
-
-                    // create selectedBox in text
-                    var active_box = document.createElement("div");
-                    active_box.id = "active_box";
-                    active_box.className = "selectedBox";
-                    active_box.style.top = startY + 'px';
-                    active_box.style.left = startX + 'px';
-                    $text.appendChild(active_box);
-                    active_box = null;
+                        // create selectedBox in text
+                        var active_box = document.createElement("div");
+                        active_box.id = "active_box";
+                        active_box.className = "selectedBox";
+                        active_box.style.top = startY + 'px';
+                        active_box.style.left = startX + 'px';
+                        $text.appendChild(active_box);
+                        active_box = null;
+                    }
                 }
             });
 
             // mouse move
-            $('#text').mousemove(function(e) {
+            $('#text').mousemove(function (e) {
                 // update the size of selectedBox
-                if(document.getElementById("active_box") !== null) {
+                if (document.getElementById("active_box") !== null) {
                     var ab = document.getElementById("active_box");
                     ab.style.width = e.pageX - startX + 'px';
                     ab.style.height = e.pageY - startY + 'px';
+
+                    drawROI = false;
                 }
 
                 // move,update coordinate of selectedBox
-                if(document.getElementById("moving_box") !== null && dragging) {
+                if (document.getElementById("moving_box") !== null && dragging) {
                     var mb = document.getElementById("moving_box");
                     var text = document.getElementById("text");
                     mb.style.top = e.pageY - diffY + 'px';
                     mb.style.left = e.pageX - diffX + 'px';
 
-                    if(mb.offsetTop < text.offsetTop) {
+                    if (mb.offsetTop < text.offsetTop) {
                         mb.style.top = text.style.top;
                     }
-                    if(mb.offsetTop + mb.offsetHeight > text.offsetTop + text.offsetHeight) {
+                    if (mb.offsetTop + mb.offsetHeight > text.offsetTop + text.offsetHeight) {
                         mb.style.top = text.offsetTop + text.offsetHeight - mb.offsetHeight + 'px';
                     }
-                    if(mb.offsetLeft < text.offsetLeft) {
+                    if (mb.offsetLeft < text.offsetLeft) {
                         mb.style.left = text.style.left;
                     }
-                    if(mb.offsetLeft + mb.offsetWidth > text.offsetLeft + text.offsetWidth) {
+                    if (mb.offsetLeft + mb.offsetWidth > text.offsetLeft + text.offsetWidth) {
                         mb.style.left = text.offsetLeft + text.offsetWidth - mb.offsetWidth + 'px';
                     }
+
+                    drawROI = false;
 
                 }
             });
 
             // mouse up
-            $('#text').mouseup(function(e) {
+            $('#text').mouseup(function (e) {
                 // forbid to drag
                 dragging = false;
-                if(document.getElementById("active_box") !== null) {
+                if (document.getElementById("active_box") !== null) {
                     var text = document.getElementById("text");
                     var ab = document.getElementById("active_box");
                     ab.removeAttribute("id");
                     // if length and width shorter than 3px，remove selectedBox
-                    if(ab.offsetWidth < 3 || ab.offsetHeight < 3) {
+                    if (ab.offsetWidth < 3 || ab.offsetHeight < 3) {
                         $("div").remove("#active_box");
                     }
 
-                    if(ab.offsetWidth + ab.offsetLeft > text.offsetWidth || ab.offsetHeight + ab.offsetLeft > text.offsetHeight) {
+                    if (ab.offsetWidth + ab.offsetLeft > text.offsetWidth || ab.offsetHeight + ab.offsetLeft > text.offsetHeight) {
                         $("div").remove("#active_box");
                     }
                 }
+
+                var ROI = $(".selectedBox");
+                if(ROI.length != 0) {
+                    offsetX = ROI.offset().left - 20;
+                    offsetY = ROI.offset().top - 198;
+                    pixelsX = ROI.width();
+                    pixelsY = ROI.height();
+                    $("#offsetX").val(offsetX);
+                    $("#offsetY").val(offsetY);
+                    $("#pixelsX").val(pixelsX);
+                    $("#pixelsY").val(pixelsY);
+                }
+                // $(".selectedBox").css("cursor", "default");
             });
         }
 
@@ -264,8 +333,9 @@
                 },
                 success: function (res) {
                     if (res.result) {
+                        $("#text").children('span').remove();
                         init();
-                        imageNum = res.num / 2;
+                        imageNum = Math.floor(res.num / 2);
                         fileNameFloder = fileName;
                         $("#images").show();
                         $("#ProgressInf").text("page 1 of " + imageNum);
@@ -273,12 +343,12 @@
                         var firstPicture = "<span> <img src='<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg' /> </span>";
                         $("#text").append(firstPicture);
                         //add picture
-                        for(var i = 1;i < imageNum; i ++) {
-                            var addPicture = "<span class='spanhide'> <img src='<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_" + (i+1) + ".jpg' /> </span>";
+                        for (var i = 1; i < imageNum; i++) {
+                            var addPicture = "<span class='spanhide'> <img src='<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_" + (i + 1) + ".jpg' /> </span>";
                             $("#text").append(addPicture);
                         }
 
-                       // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
+                        // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
 
                     } else {
                         alert("No image in this folder!");
@@ -304,7 +374,7 @@
                 $("#ProgressInf").text("page " + 1 + " of " + imageNum);
             } else {
                 // $("#text").attr("style", "background:url('') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
-               // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_" + ( temp + 1 ) + ".jpg') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
+                // $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + fileNameFloder + "/" + fileNameFloder + "_" + ( temp + 1 ) + ".jpg') no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;");
                 $("#text span").hide().eq(temp - 1).show();
                 $("#ProgressInf").text("page " + temp + " of " + imageNum);
 
@@ -322,9 +392,9 @@
                 success: function (res) {
                     if (res.result) {
                         init();
-                        $("#text").attr("style","background:url(''); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
+                        $("#text").attr("style", "background:url(''); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
 
-                        $("#ProgressInf").text("page 1 of " + imageNum);
+                        $("#ProgressInf").text("frame 1 of " + imageNum);
                         $("#text").attr("style", "background:url('<%= CONTEXT_PATH%>resources/newImages/" + selectedDiv + "/" + selectedDiv + "_1.jpg'); no-repeat center; -webkit-transition:1s all linear; background-size:100% 600px;  ");
                         hideBtMask();
                     } else {
@@ -335,119 +405,51 @@
             });
         }
 
-        function viewPulsatility() {
-            if(firstPoint_x == null || firstPoint_y == null || secondPoint_x == null || secondPoint_y == null ) {
-                alert("Please select two points!")
+        function firstPoint() {
+            var ROI = $(".selectedBox");
+            if(ROI.length == 0) {
+                alert("Please draw ROI first!");
             } else {
-                showBtMask();
-                $.ajax(ctx + 'user/viewPulsatility', {
-                    dataType: 'json',
-                    type: "POST",
-                    data: {
-                        "selectedDiv": selectedDiv,
-                        "firstPoint_x": firstPoint_x,
-                        "firstPoint_y": firstPoint_y,
-                        "secondPoint_x": secondPoint_x,
-                        "secondPoint_y": secondPoint_y,
-                        "fRate":$("#fRate").val(),
-                        "calibration": $("#manualCalibration").val()
-                    },
-                    success: function (res) {
-                        if (res.result) {
-                            hideBtMask();
-                            var xArr = res.xList;
-                            var yArr = res.yList;
-                            $("#lineChart").show();
-                            var dataPoint = [];
-                            for(var i = 0; i < xArr.length; i ++) {
-                                var arr = [];
-                                arr.push(xArr[i]);
-                                arr.push(yArr[i]);
-                                dataPoint.push(arr);
-                            }
-                            lineChartInit(dataPoint);
-
-                        } else {
-                            hideBtMask();
-                            alert("track is lost!");
-                        }
-                    }
-                });
-
-
+                getFirstPoint = true;
             }
-
 
         }
 
-
-        function lineChartInit(dataPoint) {
-            var option = {
-                title : {
-                    text: 'Tracking point',
-                },
-                tooltip : {
-                    trigger: 'axis',
-                    axisPointer:{
-                        show: true,
-                        type : 'cross',
-                        lineStyle: {
-                            type : 'dashed',
-                            width : 1
-                        }
-                    },
-
-                },
-                legend: {
-                    data:['point']
-                },
-                toolbox: {
-                    show : true,
-                    feature : {
-                        mark : {show: true},
-                        dataZoom : {show: true},
-                        dataView : {show: true, readOnly: false},
-                        magicType : {show: true, type: ['line', 'bar']},
-                        restore : {show: true},
-                        saveAsImage : {show: true}
-                    }
-                },
-                calculable : true,
-                xAxis : [
-                    {
-                        name:'X',
-                        type: 'value'
-                    }
-                ],
-                yAxis : [
-                    {
-                        name: 'Y',
-                        type: 'value',
-                        axisLine: {
-                            lineStyle: {
-                                color: '#dc143c'
-                            }
-                        }
-                    }
-                ],
-                series : [
-
-                    {
-                        name:'point',
-                        type:'line',
-                        data: dataPoint
-                    }
-                ]
-            };
-
-            var lineChart = echarts.init(document.getElementById('lineChart'));
-            lineChart.setOption(option);
+        function secondPoint() {
+            var ROI = $(".selectedBox");
+            if(ROI.length == 0) {
+                alert("Please draw ROI first!");
+            } else {
+                getSecondPoint = true;
+            }
         }
 
         function init() {
 
+            firstPoint_x = null;
+            firstPoint_y = null;
+            secondPoint_x = null;
+            secondPoint_y = null;
+            $("#first_x").val("");
+            $("#first_y").val("");
+            $("#second_x").val("");
+            $("#second_y").val("");
+            $("div").remove("#text .pixel");
+            $("div").remove("#text .pixe2");
+
+            offsetX = null;
+            offsetY = null;
+            pixelsX = null;
+            pixelsY = null;
+            $("#offsetX").val("");
+            $("#offsetY").val("");
+            $("#pixelsX").val("");
+            $("#pixelsY").val("");
+            $("div").remove("#text .selectedBox");
+
             $('#bt').css("left", 0);
             $('#bgcolor').css("width", 0);
+
         }
 
         var timer = '';  // timer
@@ -459,10 +461,10 @@
             var speed = $("#playSpeed").val();
             playSpeed = parseInt(speed.replace(/\b(0+)/gi, ""));
             if (speed == null || speed == "") {
-                alert("please input play speed");
+                alert("Please input play speed!");
             } else {
                 if (isNaN(playSpeed)) {
-                    alert("please input a correct number");
+                    alert("Please input a correct number!");
                 } else {
                     $("#startPlay").hide();
                     $("#continuePlay").hide();
@@ -480,13 +482,13 @@
         function continuePlay() {
 
             var speed = $("#playSpeed").val();
-            playSpeed = parseInt(speed.replace(/\b(0+)/gi,""));
-            if(speed == null || speed == "") {
-                alert("please input play speed");
+            playSpeed = parseInt(speed.replace(/\b(0+)/gi, ""));
+            if (speed == null || speed == "") {
+                alert("Please input play speed!");
             } else {
-                if(isNaN(playSpeed))  {
-                    alert("please input a correct number");
-                } else{
+                if (isNaN(playSpeed)) {
+                    alert("Please input a correct number!");
+                } else {
 
                     $("#startPlay").hide();
                     $("#continuePlay").hide();
@@ -499,7 +501,6 @@
         }
 
         function stopPlay() {
-
             clearInterval(timer); // delete timer
             $("#playSpeed").removeAttr('readonly');
             $("#playSpeed").val(playSpeed);
@@ -511,20 +512,162 @@
         }
 
         // play auto
-        function autoPlay(num , playSpeed) {
-            timer = setInterval(function(){ // open the Timer
+        function autoPlay(num, playSpeed) {
+            timer = setInterval(function () { // open the Timer
                 num++;
                 currentPicture = num;
-                if(num <= imageNum ){
+                if (num <= imageNum) {
                     var left = 800 / imageNum * num;
                     $('#bt').css('left', left);
                     $('#bgcolor').width(left);
                     viewImage(left / 2)
-                }else{
+                } else {
                     stopPlay();
+                    $("#continuePlay").hide();
                     init();
                 }
-            },1000/playSpeed);
+            }, 1000 / playSpeed);
+        }
+
+        function startDraw() {
+            drawROI = true;
+        }
+
+        function speckleTracking() {
+            if (offsetX == null || offsetY == null || pixelsX == null || pixelsY == null) {
+                alert("Please draw ROI first!")
+            } else {
+                showBtMask();
+                $.ajax(ctx + 'user/speckleTracking', {
+                    dataType: 'json',
+                    type: "POST",
+                    data: {
+                        "selectedDiv": selectedDiv,
+                        "offsetX": offsetX,
+                        "offsetY": offsetY,
+                        "pixelsX": pixelsX,
+                        "pixelsY": pixelsY
+                    },
+                    success: function (res) {
+                        if (res.result) {
+                            hideBtMask();
+                            alert("track success!");
+
+                        } else {
+                            hideBtMask();
+                            alert("track fail!");
+                        }
+                    }
+                });
+            }
+        }
+
+
+        function viewPulsatility() {
+            if (firstPoint_x == null || firstPoint_y == null || secondPoint_x == null || secondPoint_y == null) {
+                alert("Please select two points!")
+            } else {
+                showBtMask();
+                $.ajax(ctx + 'user/viewPulsatility', {
+                    dataType: 'json',
+                    type: "POST",
+                    data: {
+                        "imageNum" : imageNum,
+                        "selectedDiv": selectedDiv,
+                        "firstPoint_x": firstPoint_x,
+                        "firstPoint_y": firstPoint_y,
+                        "secondPoint_x": secondPoint_x,
+                        "secondPoint_y": secondPoint_y,
+                        "fRate": $("#fRate").val(),
+                        "calibration": $("#manualCalibration").val()
+                    },
+                    success: function (res) {
+                        if (res.result) {
+                            hideBtMask();
+                            var xArr = res.xList;
+                            var yArr = res.yList;
+                            $("#lineChart").show();
+                            var dataPoint = [];
+                            for (var i = 0; i < xArr.length; i++) {
+                                var arr = [];
+                                arr.push(xArr[i]);
+                                arr.push(yArr[i]);
+                                dataPoint.push(arr);
+                            }
+                            lineChartInit(dataPoint);
+
+                        } else {
+                            hideBtMask();
+                            alert("points out of ROI!");
+                        }
+                    }
+                });
+            }
+
+
+        }
+
+        function lineChartInit(dataPoint) {
+            var option = {
+                title: {
+                    text: 'Tracking point',
+                },
+                tooltip: {
+                    trigger: 'axis',
+                    axisPointer: {
+                        show: true,
+                        type: 'cross',
+                        lineStyle: {
+                            type: 'dashed',
+                            width: 1
+                        }
+                    },
+
+                },
+                legend: {
+                    data: ['point']
+                },
+                toolbox: {
+                    show: true,
+                    feature: {
+                        mark: {show: true},
+                        dataZoom: {show: true},
+                        dataView: {show: true, readOnly: false},
+                        magicType: {show: true, type: ['line', 'bar']},
+                        restore: {show: true},
+                        saveAsImage: {show: true}
+                    }
+                },
+                calculable: true,
+                xAxis: [
+                    {
+                        name: 'X',
+                        type: 'value'
+                    }
+                ],
+                yAxis: [
+                    {
+                        name: 'Y',
+                        type: 'value',
+                        axisLine: {
+                            lineStyle: {
+                                color: '#dc143c'
+                            }
+                        }
+                    }
+                ],
+                series: [
+
+                    {
+                        name: 'point',
+                        type: 'line',
+                        data: dataPoint
+                    }
+                ]
+            };
+
+            var lineChart = echarts.init(document.getElementById('lineChart'));
+            lineChart.setOption(option);
         }
 
     </script>
@@ -566,14 +709,69 @@
 
             <div class="form-inline" role="form" style="margin: 10px;">
                 <label class="control-label" for="fRate" style="margin: 0px 5px">set speed:</label>
-                <input class="form-control" id="playSpeed" name="playSpeed" style="width: 40%" onKeyUp="value=value.replace(/\D/g,'')" onchange="value=value.replace(/\D/g,'')" placeholder="pictures number per second">
+                <input class="form-control" id="playSpeed" name="playSpeed" style="width: 40%"
+                       onKeyUp="value=value.replace(/\D/g,'')" onchange="value=value.replace(/\D/g,'')"
+                       placeholder="pictures number per second">
                 <button class="btn btn-success" id="startPlay" onclick="startPlay()" style="width: 60px">start</button>
-                <button class="btn btn-default" id="continuePlay" onclick="continuePlay()" style="width: 70px;display: none">continue</button>
-                <button class="btn btn-danger" id="stopPlay" onclick="stopPlay()" style="width: 60px;display: none">stop</button>
+                <button class="btn btn-default" id="continuePlay" onclick="continuePlay()"
+                        style="width: 70px;display: none">continue
+                </button>
+                <button class="btn btn-danger" id="stopPlay" onclick="stopPlay()" style="width: 60px;display: none">
+                    stop
+                </button>
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
                 <button class="btn btn-default" onclick="verticalFlip()" style="width: 110px">vertical flip</button>
+                <button class="btn btn-default" id="drawROI" onclick="startDraw()" style="width: 80px;">drawROI</button>
+            </div>
+
+            <div class="form-inline" role="form" style="margin: 10px;">
+                <div class="form-group">
+                    <label class="control-label" for="offsetX" style="margin: 0px 5px">offsetX:</label>
+                    <input class="form-control" id="offsetX" name="offsetX" style="width: 100px" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="offsetY" style="margin: 0px 5px">offsetY:</label>
+                    <input class="form-control" id="offsetY" name="offsetY" style="width: 100px" readonly>
+                </div>
+            </div>
+            <div class="form-inline" role="form" style="margin: 10px;">
+                <div class="form-group">
+                    <label class="control-label" for="pixelsX" style="margin: 0px 5px">pixelsX:</label>
+                    <input class="form-control" id="pixelsX" name="pixelsX" style="width: 100px" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="pixelsY" style="margin: 0px 5px">pixelsY:</label>
+                    <input class="form-control" id="pixelsY" name="pixelsY" style="width: 100px" readonly>
+                </div>
+            </div>
+
+            <div class="form-inline" role="form" style="margin: 10px;">
+                <button class="btn btn-default" onclick="speckleTracking()" style="width: 150px">speckle tracking</button>
+            </div>
+
+            <div class="form-inline" role="form" style="margin: 10px;">
+                <button class="btn btn-default" onclick="firstPoint()" style="width: 110px">FirstPoint</button>
+                <div class="form-group">
+                    <label class="control-label" for="first_x" style="margin: 0px 5px">X:</label>
+                    <input class="form-control" id="first_x" name="first_x" style="width: 100px" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="first_y" style="margin: 0px 5px">Y:</label>
+                    <input class="form-control" id="first_y" name="first_y" style="width: 100px" readonly>
+                </div>
+            </div>
+            <div class="form-inline" role="form" style="margin: 10px;">
+                <button class="btn btn-default" onclick="secondPoint()" style="width: 110px">SecondPoint</button>
+                <div class="form-group">
+                    <label class="control-label" for="second_x" style="margin: 0px 5px">X:</label>
+                    <input class="form-control" id="second_x" name="second_x" style="width: 100px" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="control-label" for="second_y" style="margin: 0px 5px">Y:</label>
+                    <input class="form-control" id="second_y" name="second_y" style="width: 100px" readonly>
+                </div>
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
@@ -587,13 +785,13 @@
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
-                <button class="btn btn-default" onclick="viewPulsatility()" style="width: 110px">pulsatility</button>
+                <button class="btn btn-default" onclick="viewPulsatility()" style="width: 110px">show distances</button>
             </div>
 
-            <div class="form-inline" role="form" id="lineChart" style="display: none;margin: 10px;width: 450px;height: 350px;border: 1px red solid">
+            <div class="form-inline" role="form" id="lineChart"
+                 style="display: none;margin: 10px;width: 450px;height: 350px;border: 1px red solid">
 
             </div>
-
 
 
         </div>

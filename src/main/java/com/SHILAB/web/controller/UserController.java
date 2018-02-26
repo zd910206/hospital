@@ -45,6 +45,10 @@ public class UserController {
     @Autowired
     private HttpSessionProvider session;
 
+    MWNumericArray resultArrs = null;
+
+    static final String DISK_PATH = "E:\\workspace\\hospital\\src\\main\\webapp\\resources\\newImages";
+
 
     @RequestMapping("/forward")
     public String userForward(HttpServletRequest request,
@@ -90,7 +94,7 @@ public class UserController {
 
                 String str[] = originalFileName.split("\\.");
                 String path1 = path + "\\" + originalFileName;
-                String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages";
+                String path2 = DISK_PATH;
                 mfunc.DecompressNConvertToPath(0, path1, originalFileName, path2, path2 + "\\" + str[0]);
             }
 
@@ -113,7 +117,7 @@ public class UserController {
     public Map<String, Object> showImagesNum(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resultMap = CollectionUtils.newHashMap();
         ArrayList<String> list = new ArrayList<String>();
-        File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages");
+        File file = new File(DISK_PATH);
         File[] tempList = file.listFiles();
         for (int i = 0; i < tempList.length; i++) {
             if (tempList[i].isDirectory()) {
@@ -168,7 +172,7 @@ public class UserController {
     public Map<String, Object> showImages(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resultMap = CollectionUtils.newHashMap();
         String fileName = request.getParameter("fileName");
-        File file = new File("E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages\\" + fileName);
+        File file = new File(DISK_PATH + "\\" + fileName);
         String[] s = file.list();
         if (s.length > 0) {
             resultMap.put(RESULT, true);
@@ -190,8 +194,8 @@ public class UserController {
         try {
             MatlabFunction mfunc = new MatlabFunction();
             String path1 = path + "\\" + selectedDiv + ".dcm";
-            String path2 = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages";
-            String path3 = "E:\\workspace\\hosptial\\target\\hospital\\resources\\newImages";
+            String path2 = DISK_PATH;
+            String path3 = "E:\\workspace\\hospital\\target\\hospital\\resources\\newImages";
             mfunc.vFlipDecompressNConvertToPath(0, path1, selectedDiv + ".dcm", path2, path2 + "\\" + selectedDiv);
 
             mfunc.vFlipDecompressNConvertToPath(0, path1, selectedDiv + ".dcm", path2, path3 + "\\" + selectedDiv);
@@ -204,15 +208,50 @@ public class UserController {
         return resultMap;
     }
 
+
+
+
+    @RequestMapping("/speckleTracking")
+    @ResponseBody
+    public Map<String, Object> speckleTracking(HttpServletRequest request, HttpServletResponse response) {
+        Map<String, Object> resultMap = CollectionUtils.newHashMap();
+        String selectedDiv = request.getParameter("selectedDiv");
+        Integer offsetX = Integer.valueOf(request.getParameter("offsetX"));
+        Integer offsetY = Integer.valueOf(request.getParameter("offsetY"));
+        Integer pixelsX = Integer.valueOf(request.getParameter("pixelsX"));
+        Integer pixelsY = Integer.valueOf(request.getParameter("pixelsY"));
+
+        String path = "D:\\admin\\" + selectedDiv + ".dcm";
+
+        String path2 = DISK_PATH + "\\" + selectedDiv;
+
+        try {
+            MatlabFunction mfunc = new MatlabFunction();
+            resultArrs = (MWNumericArray) mfunc.trackAll(1, path, path2, offsetX, 600 - offsetY, pixelsX, pixelsY)[0];
+            resultMap.put(RESULT, true);
+
+        } catch (Exception e) {
+            resultMap.put(RESULT, false);
+            e.printStackTrace();
+        }
+        return resultMap;
+    }
+
+
+
+
+
     @RequestMapping("/viewPulsatility")
     @ResponseBody
     public Map<String, Object> viewPulsatility(HttpServletRequest request, HttpServletResponse response) {
         Map<String, Object> resultMap = CollectionUtils.newHashMap();
+
+        Integer imageNum = Integer.valueOf(request.getParameter("imageNum").split("\\.")[0]);
         String selectedDiv = request.getParameter("selectedDiv");
-        Double firstPoint_x = Double.valueOf(request.getParameter("firstPoint_x"));
-        Double firstPoint_y = Double.valueOf(request.getParameter("firstPoint_y"));
-        Double secondPoint_x = Double.valueOf(request.getParameter("secondPoint_x"));
-        Double secondPoint_y = Double.valueOf(request.getParameter("secondPoint_y"));
+        Integer firstPoint_x = Integer.valueOf(request.getParameter("firstPoint_x"));
+        Integer firstPoint_y = Integer.valueOf(request.getParameter("firstPoint_y"));
+        Integer secondPoint_x = Integer.valueOf(request.getParameter("secondPoint_x"));
+        Integer secondPoint_y = Integer.valueOf(request.getParameter("secondPoint_y"));
         String fRate = request.getParameter("fRate");
         String calibration = request.getParameter("calibration");
 
@@ -223,7 +262,9 @@ public class UserController {
         List<Double> yList = new ArrayList<Double>();
 
 
-        String path = "E:\\workspace\\hosptial\\src\\main\\webapp\\resources\\newImages\\" + selectedDiv + "\\" + selectedDiv + "_1.dcm";
+        String path = DISK_PATH + "\\" + selectedDiv + "\\" + selectedDiv + "_1.dcm";
+
+        String path2 = DISK_PATH + "\\" + selectedDiv + "\\pointLog.mat";
 
         try {
             MatlabFunction mfunc = new MatlabFunction();
@@ -239,15 +280,15 @@ public class UserController {
                 newcalibration = Double.parseDouble(mfunc.manualPixelCalibration(1, firstPoint_x, firstPoint_y, secondPoint_x, secondPoint_y, Double.valueOf(calibration))[0].toString());
             }
 
-            Object[] resultArr = mfunc.distBtw2Points(3, "D:\\admin\\" + selectedDiv + ".dcm", firstPoint_x, 600.0 - firstPoint_y, secondPoint_x, 600.0 - secondPoint_y, newcalibration, newfRate);
+            Object[] resultArr = mfunc.distBtw2Points_v2(3, path2, firstPoint_x, 600 - firstPoint_y, secondPoint_x, 600 - secondPoint_y, newcalibration, newfRate);
             if (resultArr[2].toString().equals("1")) {
                 resultMap.put(RESULT, false);
             } else {
 //                int len = ((Double[][])((MWNumericArray) resultArr[0]).toDoubleArray())[0].length;
-                for (int i = 1; i <= 251; i++) {
+                for (int i = 1; i < imageNum; i++) {
                     xList.add(((MWNumericArray) resultArr[0]).getDouble(i));
                 }
-                for (int i = 1; i <= 251; i++) {
+                for (int i = 1; i < imageNum; i++) {
                     yList.add(((MWNumericArray) resultArr[1]).getDouble(i));
                 }
 
