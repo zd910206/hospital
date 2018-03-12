@@ -536,9 +536,23 @@
         function speckleTracking() {
             if (offsetX == null || offsetY == null || pixelsX == null || pixelsY == null) {
                 alert("Please draw ROI first!")
-            } else {
-                showBtMask();
-                $.ajax(ctx + 'user/speckleTracking', {
+                return;
+            }
+
+            var confidenceStr = $("#confidence").val();
+            if(confidenceStr.split(".").length > 2) {
+                alert("Please input a correct number!");
+                return;
+            }else {
+                if(confidenceStr == "" || parseFloat(confidenceStr) > 1 || parseFloat(confidenceStr) < 0) {
+                    alert("Please input a correct number!")
+                    return;
+                }
+            }
+
+
+            showBtMask();
+            $.ajax(ctx + 'user/speckleTracking', {
                     dataType: 'json',
                     type: "POST",
                     data: {
@@ -546,7 +560,8 @@
                         "offsetX": offsetX,
                         "offsetY": offsetY,
                         "pixelsX": pixelsX,
-                        "pixelsY": pixelsY
+                        "pixelsY": pixelsY,
+                        "confidence": $("#confidence").val()
                     },
                     success: function (res) {
                         if (res.result) {
@@ -559,7 +574,7 @@
                         }
                     }
                 });
-            }
+
         }
 
 
@@ -748,6 +763,12 @@
             </div>
 
             <div class="form-inline" role="form" style="margin: 10px;">
+                <div class="form-group">
+                    <label class="control-label" for="confidence" style="margin: 0px 5px">confidence:</label>
+                    <input class="form-control" id="confidence" name="confidence" style="width: 100px"
+                           onKeyUp="value=value.replace(/[^\d\.]/g,'').replace(/^\./g, '')" onchange="value=value.replace(/[^\d\.]/g,'').replace(/^\./g, '')"
+                           placeholder="from 0 to 1">
+                </div>
                 <button class="btn btn-default" onclick="speckleTracking()" style="width: 150px">speckle tracking</button>
             </div>
 

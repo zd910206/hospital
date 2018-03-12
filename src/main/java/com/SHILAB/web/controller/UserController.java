@@ -176,7 +176,7 @@ public class UserController {
         String[] s = file.list();
         if (s.length > 0) {
             resultMap.put(RESULT, true);
-            resultMap.put("num", s.length);
+            resultMap.put("num", s.length - 2);
         } else {
             resultMap.put(RESULT, false);
         }
@@ -220,6 +220,8 @@ public class UserController {
         Integer offsetY = Integer.valueOf(request.getParameter("offsetY"));
         Integer pixelsX = Integer.valueOf(request.getParameter("pixelsX"));
         Integer pixelsY = Integer.valueOf(request.getParameter("pixelsY"));
+        Double confidence = Double.valueOf(request.getParameter("confidence"));
+
 
         String path = "D:\\admin\\" + selectedDiv + ".dcm";
 
@@ -227,7 +229,7 @@ public class UserController {
 
         try {
             MatlabFunction mfunc = new MatlabFunction();
-            resultArrs = (MWNumericArray) mfunc.trackAll(1, path, path2, offsetX, 600 - offsetY, pixelsX, pixelsY)[0];
+            resultArrs = (MWNumericArray) mfunc.trackAll(1, path, path2, offsetX, 600 - offsetY, pixelsX, pixelsY, confidence)[0];
             resultMap.put(RESULT, true);
 
         } catch (Exception e) {
